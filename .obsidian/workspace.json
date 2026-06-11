@@ -1,0 +1,210 @@
+{
+  "main": {
+    "id": "13e9b3ce9f433628",
+    "type": "split",
+    "children": [
+      {
+        "id": "02390c0651f7ac3a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1effc59509d0c595",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Nueva pestaña"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "3459dd285afe65f5",
+    "type": "split",
+    "children": [
+      {
+        "id": "51eae2735c0f26cf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2cebf6e4af206a6a",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de archivos"
+            }
+          },
+          {
+            "id": "be9568219bc5d9c1",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Buscar"
+            }
+          },
+          {
+            "id": "43d0a18741bd092b",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200,
+    "collapsed": true
+  },
+  "right": {
+    "id": "440e53b08aca9fed",
+    "type": "split",
+    "children": [
+      {
+        "id": "72ae560adedccb9f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "29757d8a1f07b656",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Bienvenido.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Enlaces entrantes de Bienvenido"
+            }
+          },
+          {
+            "id": "647372ba792c2b5c",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Bienvenido.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Enlaces salientes de Bienvenido"
+            }
+          },
+          {
+            "id": "2769be131c2a8155",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "f7f8a0c58a63b168",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas las propiedades"
+            }
+          },
+          {
+            "id": "6f5b306397e9eda8",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Bienvenido.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Esquema de Bienvenido"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir selector rápido": false,
+      "graph:Abrir vista gráfica": false,
+      "canvas:Crear nuevo lienzo": false,
+      "daily-notes:Abrir la nota de hoy": false,
+      "templates:Insertar plantilla": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Crear nueva base": false
+    }
+  },
+  "active": "1effc59509d0c595",
+  "lastOpenFiles": [
+    "asa.md",
+    "configHP1000.md",
+    "backsource/themes/qt",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/assets/check-unchecked-backdrop-insensitive@2.png",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/assets/titlebutton-maximize-maximized-active-backdrop.png",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/assets/toolbar-background.png",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/assets/radio-unchecked-insensitive@2.png",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/assets/arrow-up-active.png",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/assets/togglebutton.png",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/assets/scale-slider-insensitive.png",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/assets/spinbutton-down.png",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/assets/radio-checked-insensitive@2.png",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/assets/check-checked-hover@2.png",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/gtk-2.0/widgets/scrollbar",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/gtk-2.0/widgets/range",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/gtk-2.0/widgets/notebook",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/gtk-2.0/widgets/buttons",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/gtk-2.0/widgets/misc",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/gtk-2.0/widgets/default",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/gtk-2.0/widgets/toolbar",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/gtk-2.0/widgets/progressbar",
+    "backsource/themes/gtk/Breeze-Dark-Simple-wall/gtk-2.0/widgets/styles",
+    "backsource/config/nvim/README.md",
+    "Bienvenido.md"
+  ]
+}

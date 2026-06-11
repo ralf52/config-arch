@@ -1,0 +1,252 @@
+// -*- mode: jsonc -*-
+//
+[
+  {
+    // "layer": "top", // Waybar at top layer
+    "height": 34,
+    // "width": 1280,
+    "spacing": 4,
+    "reload_style_on_change": true, // recargar si cambia el css
+    "margin": "12 8 0 8",
+    // Choose the order of the modules
+    "group/system": {
+      "orientation": "horizontal",
+      "modules": ["idle_inhibitor", "custom/notification", "custom/power"],
+    },
+    "group/tools": {
+      "orientation": "horizontal",
+      "modules": ["tray", "mpd", "cpu", "pulseaudio", "backlight", "clock"],
+    },
+    "modules-left": ["hyprland/workspaces"],
+    "modules-center": ["hyprland/window"],
+    "modules-right": ["privacy", "group/tools", "group/system"],
+
+    "hyprland/workspaces": {
+      "format": "{icon}",
+      "format-icons": {
+        "active": "●",
+        "default": "○",
+        "empty": "○",
+        "persistent": "◉",
+        "urgent": "⚠",
+      },
+      "on-scroll-up": "hyprctl dispatch workspace e+1",
+      "on-scroll-down": "hyprctl dispatch workspace e-1",
+      "sort-by-number": true,
+      "all-outputs": true,
+    },
+
+    "hyprland/window": {
+      "separate-outputs": true,
+      // Para Mostrar un icono si se necesita https://manpages.debian.org/testing/waybar/waybar.5.en.html
+      "swap-icon-label": true,
+    },
+    // Modules configuration
+    // "sway/workspaces": {
+    //     "disable-scroll": true,
+    //     "all-outputs": true,
+    //     "warp-on-scroll": false,
+    //     "format": "{name}: {icon}",
+    //     "format-icons": {
+    //         "1": "",
+    //         "2": "",
+    //         "3": "",
+    //         "4": "",
+    //         "5": "",
+    //         "urgent": "",
+    //         "focused": "",
+    //         "default": ""
+    //     }
+    // },
+    "mpd": {
+      "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
+      "format-disconnected": "Disconnected ",
+      "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+      "unknown-tag": "N/A",
+      "interval": 5,
+      "consume-icons": {
+        "on": " ",
+      },
+      "random-icons": {
+        "off": "<span color=\"#f53c3c\"></span> ",
+        "on": " ",
+      },
+      "repeat-icons": {
+        "on": " ",
+      },
+      "single-icons": {
+        "on": "1 ",
+      },
+      "state-icons": {
+        "paused": "",
+        "playing": "",
+      },
+      "tooltip-format": "MPD (connected)",
+      "tooltip-format-disconnected": "MPD (disconnected)",
+    },
+    "idle_inhibitor": {
+      "format": "{icon}",
+      "format-icons": {
+        "activated": "",
+        "deactivated": "",
+      },
+    },
+    "tray": {
+      "icon-size": 18,
+      "spacing": 4,
+      "show-passive-items": true,
+      // "icons": {
+      //   "blueman": "bluetooth",
+      //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
+      // }
+    },
+    "clock": {
+      "format": "{:%I:%M%p}",
+      "tooltip-format": "<tt><small>{calendar}</small></tt>",
+      "format-alt": "{:%Y-%m-%d %H:%M}",
+    },
+    "cpu": {
+      "format": "{usage}% ",
+      "tooltip": false,
+    },
+    "temperature": {
+      // "thermal-zone": 2,
+      // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+      "critical-threshold": 80,
+      // "format-critical": "{temperatureC}°C {icon}",
+      "format": "{temperatureC}°C {icon}",
+      "format-icons": ["", "", ""],
+    },
+    "backlight": {
+      // "device": "acpi_video1",
+      "format": "{percent}% {icon}",
+      "format-icons": ["", "", "", "", "", "", "", "", ""],
+    },
+    "pulseaudio": {
+      // "scroll-step": 1, // %, can be a float
+      "format": "{volume}% {icon}",
+      "format-bluetooth": "{volume}% {icon} {format_source}",
+      "format-bluetooth-muted": " {icon} {format_source}",
+      "format-muted": " {format_source}",
+      "format-source": "{volume}% ",
+      "format-source-muted": "",
+      "format-icons": {
+        "headphone": "",
+        "hands-free": "",
+        "headset": "",
+        "phone": "",
+        "portable": "",
+        "car": "",
+        "default": ["", "", " "],
+      },
+      "on-click": "pavucontrol",
+    },
+    "privacy": {
+      "icon-spacing": 4,
+      "icon-size": 17,
+      "transition-duration": 250,
+      "modules": [
+        {
+          "type": "screenshare",
+          "tooltip": true,
+          "tooltip-icon-size": 24,
+        },
+        {
+          "type": "audio-out",
+          "tooltip": true,
+          "tooltip-icon-size": 24,
+        },
+        {
+          "type": "audio-in",
+          "tooltip": true,
+          "tooltip-icon-size": 24,
+        },
+      ],
+      "ignore-monitor": false,
+      "ignore": [
+        {
+          "type": "audio-in",
+          "name": "cava",
+        },
+        {
+          "type": "screenshare",
+          "name": "obs",
+        },
+      ],
+    },
+    "custom/notification": {
+      "tooltip": false,
+      "format": "{icon}",
+      "format-icons": {
+        "notification": "󱅫",
+        "none": "󰂛",
+        "dnd-notification": "󰂞",
+        "dnd-none": "󰂜",
+      },
+      "return-type": "json",
+      "exec-if": "which swaync-client",
+      "exec": "swaync-client -swb",
+      "on-click": "sleep 0.1 && swaync-client -t -sw",
+      "on-click-right": "sleep 0.1 && swaync-client -d -sw",
+      "escape": true,
+    },
+    "custom/power": {
+      "format": "",
+      "tooltip": false,
+      "menu": "on-click",
+      "on-scroll-up": "",
+      "on-scroll-down": "",
+      "menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
+      "menu-actions": {
+        "shutdown": "shutdown now",
+        "reboot": "reboot",
+        "suspend": "systemctl suspend",
+        "logout": "hyprctl dispatch exit",
+      },
+    },
+  },
+
+  {
+    // Second Bar
+    "layer": "bottom",
+    "position": "bottom",
+    "height": 34,
+    "spacing": 4,
+    "margin": "0 8 8 8",
+
+    "group/mini-apps": {
+      "orientation": "horizontal",
+      "modules": [
+        "custom/hyprland-icon",
+        "wlr/taskbar",
+        "custom/search-launcher",
+      ],
+    },
+    "modules-center": ["group/mini-apps"],
+
+    "custom/hyprland-icon": {
+      "format": "  ",
+      "tooltip": false,
+      "on-click": "dolphin",
+    },
+
+    // Pinned and Open Applications Taskbar
+    "wlr/taskbar": {
+      "format": "{icon}",
+      "tooltip": true,
+      "tooltip-format": "{title}",
+      "on-click": "activate", // Focus or minimize window on click
+      "on-click-middle": "close", // Close window on middle-click
+      "on-click-right": "fullscreen", // Toggle fullscreen on right-click (if supported)
+      "ignore-list": [
+        // Hide specific applications (like scratchpads)
+        "scratchpad",
+      ],
+    },
+    "custom/search-launcher": {
+      "format": "  ",
+      "tooltip": false,
+      "on-click": "nwg-drawer",
+    },
+  },
+]

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Define menu entries with Nerd Fonts icons
+# Find more icons at: https://www.nerdfonts.com/cheat-sheet[citation:3]
+entries="  Apagar\n  Reiniciar\n  Bloquear\n  Suspender\n  Cerrar Session"
+
+# Use wofi as a dmenu to show the options
+chosen=$(echo -e "$entries" | wofi --dmenu --prompt="Power Menu:")
+
+# Execute the chosen action
+case "$chosen" in
+"  Apagar")
+  systemctl poweroff
+  ;;
+"  Reiniciar")
+  systemctl reboot
+  ;;
+"  Bloquear")
+  # Replace with your locker command (e.g., hyprlock, swaylock)
+  hyprlock
+  ;;
+"  Suspender")
+  systemctl suspend
+  ;;
+"  Cerrar Session")
+  # Exits the Hyprland session
+  hyprctl dispatch exit
+  ;;
+esac

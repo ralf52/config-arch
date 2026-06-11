@@ -1,0 +1,298 @@
+#!/bin/bash
+# Bloquear para evitar multiples ejecuciones simultaneas
+exec 200>/tmp/wallpaper_script.lock
+flock -n 200 || {
+  echo "Script ya en ejecucion, se omite esta corrida"
+  exit 0
+}
+
+# Configuracion de la busqueda online
+WALLHAVEN_API_URL="https://wallhaven.cc/api/v1/search"
+WALLHAVEN_API_KEY="${WALLHAVEN_API_KEY:-}"
+WALLHAVEN_QUERY="${WALLHAVEN_QUERY:-nature}"
+WALLHAVEN_MIN_RES="${WALLHAVEN_MIN_RES:-1920x1080}"
+WALLHAVEN_CATEGORIES="${WALLHAVEN_CATEGORIES:-010}"
+WALLHAVEN_PURITY="${WALLHAVEN_PURITY:-100}"
+WALLHAVEN_TOP_RANGE="${WALLHAVEN_TOP_RANGE:-1M}" # 1D, 1W, 1M, 3M, 6M, 1Y
+
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/wallhaven"
+WALLPAPER_CACHE_DIR="$CACHE_DIR/images"
+HISTORY_FILE="$CACHE_DIR/recent_ids"
+LAST_ID_FILE="$CACHE_DIR/last_id"
+MAX_RECENT_IDS="${WALLHAVEN_MAX_RECENT:-500}"
+CACHE_CLEAN_INTERVAL="${WALLHAVEN_CACHE_CLEAN_INTERVAL:-21600}" # segundos (6h)
+CACHE_MAX_AGE_DAYS="${WALLHAVEN_CACHE_MAX_AGE_DAYS:-7}"
+CACHE_CLEAN_STAMP_FILE="$CACHE_DIR/.last_cache_cleanup"
+WALLHAVEN_MAX_PAGES="${WALLHAVEN_MAX_PAGES:-5}"
+MIN_SECONDS_BETWEEN_RUNS="${WALLHAVEN_MIN_SECONDS_BETWEEN_RUNS:-8}"
+RUN_STAMP_FILE="$CACHE_DIR/.last_run"
+CURL_API_TIMEOUT="${WALLHAVEN_CURL_API_TIMEOUT:-20}"
+CURL_DOWNLOAD_TIMEOUT="${WALLHAVEN_CURL_DOWNLOAD_TIMEOUT:-60}"
+
+mkdir -p "$WALLPAPER_CACHE_DIR"
+
+ensure_wayland_env() {
+  local runtime_dir
+  local socket_name
+
+  runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$UID}"
+  export XDG_RUNTIME_DIR="$runtime_dir"
+
+  if [[ -n "${WAYLAND_DISPLAY:-}" && -S "$runtime_dir/$WAYLAND_DISPLAY" ]]; then
+    return 0
+  fi
+
+  socket_name="$(find "$runtime_dir" -maxdepth 1 -type s -name 'wayland-*' -printf '%f\n' | sort | head -n 1)"
+  if [[ -n "$socket_name" ]]; then
+    export WAYLAND_DISPLAY="$socket_name"
+  fi
+}
+
+should_skip_recent_run() {
+  local now
+  local last_run=0
+
+  now="$(date +%s)"
+
+  if [[ -f "$RUN_STAMP_FILE" ]]; then
+    last_run="$(stat -c %Y "$RUN_STAMP_FILE" 2>/dev/null || echo 0)"
+  fi
+
+  if ((now - last_run < MIN_SECONDS_BETWEEN_RUNS)); then
+    return 0
+  fi
+
+  touch "$RUN_STAMP_FILE"
+  return 1
+}
+
+cleanup_wallpaper_cache_if_needed() {
+  local now
+  local last_cleanup=0
+
+  now="$(date +%s)"
+
+  if [[ -f "$CACHE_CLEAN_STAMP_FILE" ]]; then
+    last_cleanup="$(stat -c %Y "$CACHE_CLEAN_STAMP_FILE" 2>/dev/null || echo 0)"
+  fi
+
+  if ((now - last_cleanup < CACHE_CLEAN_INTERVAL)); then
+    return 0
+  fi
+
+  find "$WALLPAPER_CACHE_DIR" -type f -mtime "+$CACHE_MAX_AGE_DAYS" -delete 2>/dev/null || true
+  touch "$CACHE_CLEAN_STAMP_FILE"
+}
+
+build_query_url() {
+  printf "%s?q=%s&sorting=toplist&topRange=%s&atleast=%s&categories=%s&purity=%s" \
+    "$WALLHAVEN_API_URL" \
+    "$WALLHAVEN_QUERY" \
+    "$WALLHAVEN_TOP_RANGE" \
+    "$WALLHAVEN_MIN_RES" \
+    "$WALLHAVEN_CATEGORIES" \
+    "$WALLHAVEN_PURITY"
+}
+
+append_auth_param() {
+  local url="$1"
+
+  if [[ -n "$WALLHAVEN_API_KEY" ]]; then
+    printf "%s&apikey=%s" "$url" "$WALLHAVEN_API_KEY"
+  else
+    printf "%s" "$url"
+  fi
+}
+
+pick_new_wallpaper() {
+  local api_url
+  local page_url
+  local json
+  local id
+  local candidate_id
+  local path
+  local ext
+  local dest
+  local page=1
+  local last_page=1
+  local last_id=""
+  local mode
+  local -a ids=()
+  local -a candidates=()
+  local -a recent=()
+  local tmp_history
+  declare -A id_to_path=()
+
+  api_url="$(build_query_url)"
+
+  if [[ -f "$LAST_ID_FILE" ]]; then
+    last_id="$(head -n 1 "$LAST_ID_FILE")"
+  fi
+
+  while ((page <= WALLHAVEN_MAX_PAGES)); do
+    page_url="$(append_auth_param "$api_url&page=$page")"
+    json="$(curl -fsS --connect-timeout 8 --max-time "$CURL_API_TIMEOUT" "$page_url")" || break
+
+    while IFS=$'\t' read -r candidate_id path; do
+      [[ -z "$candidate_id" || "$candidate_id" == "null" ]] && continue
+      [[ -z "$path" || "$path" == "null" ]] && continue
+
+      if [[ -z "${id_to_path[$candidate_id]}" ]]; then
+        ids+=("$candidate_id")
+        id_to_path[$candidate_id]="$path"
+      fi
+    done < <(echo "$json" | jq -r '.data[] | [.id, .path] | @tsv')
+
+    last_page="$(echo "$json" | jq -r '.meta.last_page // 1')"
+    [[ "$last_page" =~ ^[0-9]+$ ]] || last_page=1
+    ((page >= last_page)) && break
+
+    ((page++))
+    sleep 0.1
+  done
+
+  if ((${#ids[@]} == 0)); then
+    return 1
+  fi
+
+  if [[ -f "$HISTORY_FILE" ]]; then
+    while IFS= read -r candidate_id; do
+      [[ -n "$candidate_id" ]] && recent+=("$candidate_id")
+    done <"$HISTORY_FILE"
+  fi
+
+  # Reinicia el historial cuando llega al limite para comenzar un nuevo ciclo.
+  if ((${#recent[@]} >= MAX_RECENT_IDS)); then
+    : >"$HISTORY_FILE"
+    recent=()
+  fi
+
+  for mode in strict no_recent any; do
+    candidates=()
+
+    for candidate_id in "${ids[@]}"; do
+      # Evita repetir inmediatamente el último wallpaper, incluso con pool agotado.
+      if [[ -n "$last_id" && "$candidate_id" == "$last_id" ]]; then
+        continue
+      fi
+
+      if [[ "$mode" == "strict" ]]; then
+        if printf '%s\n' "${recent[@]}" | grep -Fxq "$candidate_id"; then
+          continue
+        fi
+      elif [[ "$mode" == "no_recent" ]]; then
+        :
+      fi
+
+      candidates+=("$candidate_id")
+    done
+
+    if ((${#candidates[@]} > 0)); then
+      break
+    fi
+  done
+
+  if ((${#candidates[@]} == 0)); then
+    candidates=("${ids[@]}")
+  fi
+
+  id="$(printf '%s\n' "${candidates[@]}" | shuf -n 1)"
+
+  if [[ -z "$id" || "$id" == "null" ]]; then
+    return 1
+  fi
+
+  path="${id_to_path[$id]}"
+
+  if [[ -z "$path" || "$path" == "null" ]]; then
+    return 1
+  fi
+
+  ext="${path##*.}"
+  ext="${ext%%\?*}"
+  dest="$WALLPAPER_CACHE_DIR/${id}.${ext}"
+
+  if [[ ! -f "$dest" ]]; then
+    curl -fsSL --connect-timeout 8 --max-time "$CURL_DOWNLOAD_TIMEOUT" "$path" -o "$dest" || return 1
+  fi
+
+  tmp_history="$(mktemp)"
+  {
+    echo "$id"
+    if [[ -f "$HISTORY_FILE" ]]; then
+      cat "$HISTORY_FILE"
+    fi
+  } | awk 'NF && !seen[$0]++' | head -n "$MAX_RECENT_IDS" >"$tmp_history"
+  mv "$tmp_history" "$HISTORY_FILE"
+  printf '%s\n' "$id" >"$LAST_ID_FILE"
+
+  echo "$dest"
+  return 0
+}
+
+cleanup_wallpaper_cache_if_needed
+
+if should_skip_recent_run; then
+  echo "Ejecucion omitida por anti-rebote (${MIN_SECONDS_BETWEEN_RUNS}s)"
+  exit 0
+fi
+
+ensure_wayland_env
+
+SELECTED_WALLPAPER="$(pick_new_wallpaper)"
+
+if [[ -z "$SELECTED_WALLPAPER" ]]; then
+  echo "No se pudo obtener un wallpaper online" >&2
+  exit 1
+fi
+
+# Aplicar wallpaper
+swww img "$SELECTED_WALLPAPER" --transition-type any
+
+# Generar paleta de colores
+wal -n -i "$SELECTED_WALLPAPER" >/dev/null 2>&1
+
+# Esperar a que se generen los archivos de pywal
+sleep 0.5 # Pequena espera
+
+update_nvim_colors() {
+  local socket
+  local -a sockets=()
+
+  if command -v nvr >/dev/null 2>&1; then
+    while IFS= read -r socket; do
+      sockets+=("$socket")
+    done < <(nvr --serverlist 2>/dev/null || true)
+  fi
+
+  while IFS= read -r socket; do
+    sockets+=("$socket")
+  done < <(find /tmp "/run/user/$UID" -type s -name "nvim*" 2>/dev/null || true)
+
+  if ((${#sockets[@]} == 0)); then
+    return 0
+  fi
+
+  while IFS= read -r socket; do
+    nvim --server "$socket" --remote-expr "execute('silent! colorscheme pywal')" >/dev/null 2>&1 || true
+    nvim --server "$socket" --remote-send '<Cmd>silent! doautocmd ColorScheme<CR>' >/dev/null 2>&1 || true
+  done < <(printf '%s\n' "${sockets[@]}" | awk 'NF' | sort -u)
+}
+
+# Verificar que los archivos existen antes de continuar
+if [[ -f "$HOME/.cache/wal/colors" ]]; then
+  ## Recargar servicios
+
+  # waybar
+  killall -SIGUSR2 waybar # reiniciar paleta de barra
+  #systemctl --user restart --now waybar.service
+
+  # swaync
+  systemctl --user restart swaync.service
+
+  # nvim
+  update_nvim_colors
+else
+  echo "Error: Archivos de pywal no generados" >&2
+  exit 1
+fi

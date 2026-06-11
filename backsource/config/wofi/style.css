@@ -1,0 +1,64 @@
+@import "/home/franky/.cache/wal/colors-custom-gtk3.css";
+
+window {
+  margin: 5px;
+  border-top: none;
+  background-color: transparent;
+  border-radius: 0 0 16px 16px;
+}
+
+#input {
+  margin: 5px;
+  border: none;
+  color: black;
+  caret-color: rgb(0, 0, 0);
+  background-color: @foreground;
+}
+/* Para iconos SVG dentro del input */
+#input image {
+  color: @background; /* Para iconos que usan color */
+}
+
+#input > box > image {
+  color: @background;
+}
+input:selected {
+  color: @color0;
+}
+#entry {
+  color: white;
+  padding: 4px;
+  border-radius: 0;
+  border: 2px solid transparent;
+  background-color: transparent;
+}
+#selected {
+  background-color: @color1;
+  border-radius: 0 16px 16px 0;
+}
+#inner-box {
+  padding: 0;
+  border-top: 2px solid @foreground;
+}
+
+#text:selected {
+  color: @background;
+}
+
+#outer-box {
+  margin: 5px;
+  padding: 8px;
+  background-color: transparent;
+}
+
+#scroll {
+  margin: 0 36px;
+  border-radius: 0 0 8px 8px;
+  border-top: 2px solid @foreground;
+  padding: 4px 0 0 0;
+  background-color: @background;
+}
+
+#text {
+  margin: 5px;
+}

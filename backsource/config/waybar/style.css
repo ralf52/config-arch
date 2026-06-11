@@ -1,0 +1,318 @@
+/* Importa pywal CSS */
+@import "/home/franky/.cache/wal/colors-custom-gtk3.css";
+
+/* Colores en RGB con alpha */
+@define-color error rgb(235, 77, 75);
+@define-color errorAlpha rgba(235, 77, 75, 0.5);
+
+@define-color warn rgb(253, 255, 0);
+@define-color warnAlpha rgba(253, 255, 0, 0.5);
+
+@define-color success rgb(100, 210, 125);
+@define-color successAlpha rgba(100, 210, 125, 0.5);
+
+@define-color white rgb(253, 253, 253);
+@define-color whiteAlpha rgba(253, 253, 253, 0.5);
+
+@define-color black rgb(13, 13, 13);
+@define-color blackAlpha rgba(13, 13, 13, 0.5);
+
+* {
+  /* `otf-font-awesome` is required to be installed for icons */
+  font-family:
+    RecursiveNerd, NerdFontsSymbols, RobotoMonoNerd, FontAwesome, sans-serif;
+  font-size: 11px;
+}
+
+window#waybar {
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.3) 90%,
+    rgba(0, 0, 0, 0) 10%
+  );
+  border-width: 1.5px;
+  border-style: solid;
+  border-radius: 8px;
+  border-image: linear-gradient(
+      to right,
+      transparent 5%,
+      @background 5%,
+      @background 80%,
+      transparent 80%
+    )
+    1;
+  color: @white;
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  border-radius: 16px;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+/*
+window#waybar.empty {
+    background-color: transparent;
+}
+window#waybar.solo {
+    background-color: #FFFFFF;
+}
+*/
+window#waybar.bottom {
+  background: transparent;
+  border: none;
+}
+
+window#waybar.termite {
+  background-color: #3f3f3f;
+}
+
+window#waybar.chromium {
+  background-color: @black;
+  border: none;
+}
+.modules-center {
+  font-weight: 900;
+}
+button {
+  box-shadow: inset 0 -3px transparent;
+  border: none;
+  border-radius: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Animación suave de 0.3s */
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+button:hover {
+  box-shadow: inset 0 -2px @color3;
+}
+
+/* you can set a style on hover for any module like this */
+#pulseaudio:hover,
+#clock:hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: @color3Alpha;
+  color: @white;
+}
+
+#tray > *:hover {
+  box-shadow: inset 0 -2px @color3;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#custom-power:hover,
+#idle_inhibitor:hover,
+#custom-notification:hover {
+  opacity: 1;
+  color: @white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#custom-search-launcher,
+#custom-hyprland-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Animación suave de 0.3s */
+  /* También puedes usar: transition: background-color 0.3s ease, border-radius 0.3s ease; */
+}
+
+#custom-search-launcher:hover,
+#custom-hyprland-icon:hover {
+  color: @background;
+  background-color: @color3;
+}
+
+#custom-search-launcher {
+  padding: 0 24px 0 8px;
+  border-radius: 4px 16px 16px 4px;
+}
+
+#custom-hyprland-icon {
+  padding: 0 8px 0 24px;
+  border-radius: 16px 4px 4px 16px;
+}
+#workspaces button {
+  padding: 0 4px;
+  background-color: transparent;
+  color: @color3;
+  opacity: 0.5;
+}
+
+#workspaces button:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0);
+}
+
+#workspaces button.focused {
+  background-color: @color1;
+  box-shadow: inset 0 -3px @foreground;
+}
+
+#workspaces button.urgent {
+  background-color: @error;
+}
+
+#mode {
+  background-color: @success;
+  box-shadow: inset 0 -3px @foreground;
+}
+
+#clock,
+#cpu,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#wireplumber,
+#tray,
+#mode,
+#mpd {
+  padding: 0 8px;
+  border-radius: 4px;
+}
+
+#cpu {
+  min-width: 36px;
+}
+
+#tools,
+#system,
+#workspaces,
+#mini-apps {
+  padding: 2px;
+  background-color: @background;
+  color: @foreground;
+}
+
+#tools {
+  border-radius: 0 4px 4px 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#mini-apps {
+  background-color: @background;
+  border-radius: 16px;
+}
+
+#system {
+  padding: 3px;
+  border-radius: 4px 16px 16px 4px;
+}
+
+#idle_inhibitor,
+#custom-power,
+#custom-notification {
+  background-color: @color3;
+  color: @background;
+  padding: 0 4px;
+  opacity: 0.5;
+}
+
+#idle_inhibitor {
+  border-radius: 2px 0 0 2px;
+}
+
+#custom-notification {
+  padding: 0 8px;
+}
+#custom-power {
+  border-radius: 0 16px 16px 0;
+  padding: 0 12px 0 8px;
+}
+
+#window {
+  border-radius: 4px;
+}
+#workspaces {
+  padding: 0 8px;
+  border-radius: 16px 0 0 16px;
+  min-width: 180px;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces {
+  margin-left: 0;
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #workspaces {
+  margin-right: 0;
+}
+
+@keyframes blink {
+  to {
+    background-color: #ffffff;
+    color: #000000;
+  }
+}
+
+label:focus {
+  background-color: @background;
+}
+
+#backlight {
+  background-color: #90b1b1;
+}
+
+#pulseaudio.muted {
+  background-color: @color5;
+  color: @background;
+}
+
+#wireplumber.muted {
+  background-color: #f53c3c;
+}
+
+#temperature.critical {
+  background-color: #eb4d4b;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: #eb4d4b;
+}
+
+#idle_inhibitor.activated {
+  background-color: @success;
+  color: @white;
+  opacity: 1;
+}
+
+#mpd {
+  background-color: #66cc99;
+  color: #2a5c45;
+}
+
+#mpd.disconnected {
+  background-color: #f53c3c;
+}
+
+#mpd.stopped {
+  background-color: #90b1b1;
+}
+
+#mpd.paused {
+  background-color: #51a37a;
+}
+
+#privacy {
+  padding: 0;
+}
+
+#privacy-item {
+  padding: 0 5px;
+  color: @color2;
+}
+
+#privacy-item.screenshare {
+  color: #cf5700;
+}
+
+#privacy-item.audio-in {
+  color: #1ca000;
+}
+
+#privacy-item.audio-out {
+  color: #0069d4;
+}

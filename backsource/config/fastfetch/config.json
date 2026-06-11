@@ -1,0 +1,167 @@
+{
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+    
+    "modules": [
+        {
+            "type": "custom",
+            "format": "\n\n\n\n\n\n\n┌──────────────────────────────────────┐",
+            "key": "top_border"
+        },
+        {
+            "type": "os",
+            "format": "\\n \\n  {1}",
+            "key": "Distro"
+        },
+        {
+            "type": "host",
+            "format": "\\n \\n  {2}",
+            "key": "Model"
+        },
+        {
+            "type": "kernel",
+            "format": "\\n \\n  {1}",
+            "key": "Kernel"
+        },
+        {
+            "type": "uptime",
+            "format": "\\n \\n  {1}",
+            "key": "Uptime"
+        },
+        {
+            "type": "packages",
+            "format": "\\n \\n 󰏗 {1}",
+            "key": "Packages"
+        },
+        {
+            "type": "shell",
+            "format": "\\n \\n  {1}",
+            "key": "Shell"
+        },
+        {
+            "type": "theme",
+            "format": "\\n \\n 󰔎 {1}",
+            "key": "Theme"
+        },
+        {
+            "type": "terminal",
+            "format": "\\n \\n  {1}",
+            "key": "Terminal"
+        },
+        {
+            "type": "terminalfont",
+            "format": "\\n \\n  {1}",
+            "key": "TerminalFont"
+        },
+        {
+            "type": "cpu",
+            "format": "\\n \\n  {1}",
+            "key": "CPU"
+        },
+        {
+            "type": "gpu",
+            "format": "\\n \\n 󰊚 {1}",
+            "key": "GPU"
+        },
+        {
+            "type": "memory",
+            "format": "\\n \\n  {1}",
+            "key": "Memory"
+        },
+        {
+            "type": "disk",
+            "format": "\\n \\n  {1}",
+            "key": "Disk"
+        },
+        {
+            "type": "music",
+            "format": "\\n \\n  {1}",
+            "key": "Song"
+        },
+        {
+            "type": "custom",
+            "format": "\\n└─────────────────────         ┘\\n",
+            "key": "bottom_border"
+        }
+    ],
+
+    "display": {
+        "separator": " ",
+        "keyColor": "gray",
+        "keySuffix": "",
+        "separatorColor": "gray"
+    },
+
+    "logo": {
+        "type": "none"
+    },
+
+    "general": {
+        "multithreading": true,
+        "showErrors": false,
+        "loadConfigPrompt": false
+    },
+
+    "os": {
+        "format": "{2}",
+        "verbose": false
+    },
+
+    "kernel": {
+        "key": "Kernel",
+        "format": "{1}"
+    },
+
+    "uptime": {
+        "format": "{1}"
+    },
+
+    "packages": {
+        "format": "{1}",
+        "showLegend": true
+    },
+
+    "shell": {
+        "format": "{1}",
+        "showVersion": true,
+        "showPath": false
+    },
+
+    "cpu": {
+        "showCores": "logical",
+        "showTemperature": false,
+        "showFrequency": true,
+        "frequencyType": "bios",
+        "showMaxFrequency": false,
+        "showBrand": true,
+        "format": "{1}"
+    },
+
+    "gpu": {
+        "showType": "all",
+        "showBrand": true,
+        "format": "{1}"
+    },
+
+    "memory": {
+        "showPercentage": true,
+        "unit": "mib",
+        "format": "{1}"
+    },
+
+    "disk": {
+        "showType": "mounted",
+        "showTotal": true,
+        "showUsed": true,
+        "showFree": false,
+        "showPercentage": true,
+        "disks": ["/storage/emulated", "/", "/server"],
+        "format": "{1}",
+        "legend": "none"
+    },
+
+    "music": {
+        "player": "auto",
+        "format": "{artist} - {album} - {title}",
+        "maxLength": 0
+    }
+}

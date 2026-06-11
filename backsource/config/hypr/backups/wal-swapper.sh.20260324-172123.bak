@@ -1,0 +1,71 @@
+#!/bin/bash
+# Bloquear para evitar múltiples ejecuciones simultáneas
+exec 200>/tmp/wallpaper_script.lock
+flock -n 200 || {
+  echo "Script ya en ejecución"
+  exit 1
+}
+# Ubicacion de tu carpeta
+WALLPAPER_DIR="$HOME/Imágenes/fdp/v00/"
+
+SELECTED_WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.jpeg" \) | shuf -n 1)
+
+swww img "$SELECTED_WALLPAPER" --transition-type any
+
+# Generar paleta de colores
+OLD_WAL_MTIME=$(stat -c %Y "$HOME/.cache/wal/colors-wal.vim" 2>/dev/null || echo 0)
+wal -n -i "$SELECTED_WALLPAPER" >/dev/null 2>&1
+
+# Esperar a que se generen los archivos de pywal
+for _ in {1..20}; do
+  NEW_WAL_MTIME=$(stat -c %Y "$HOME/.cache/wal/colors-wal.vim" 2>/dev/null || echo 0)
+  if [ "$NEW_WAL_MTIME" -gt "$OLD_WAL_MTIME" ]; then
+    break
+  fi
+  sleep 0.1
+done
+
+# Verificar que los archivos existen antes de continuar
+if [[ -f "$HOME/.cache/wal/colors" ]]; then
+  COLOR_HYPRLAND_FILE="$HOME/.cache/wal/color-hyprland.conf"
+
+  # Validar que pywal haya generado variables de color esperadas para Hyprland.
+  if [[ ! -f "$COLOR_HYPRLAND_FILE" ]] || ! grep -q '^\$cb = rgb(' "$COLOR_HYPRLAND_FILE" || ! grep -q '^\$cc = rgb(' "$COLOR_HYPRLAND_FILE"; then
+    echo "Error: Plantilla de Hyprland no generada correctamente en $COLOR_HYPRLAND_FILE" >&2
+    exit 1
+  fi
+
+  # Recargar Hyprland para aplicar inmediatamente colores recién generados.
+  if command -v hyprctl >/dev/null 2>&1; then
+    if ! hyprctl reload >/dev/null 2>&1; then
+      echo "Warning: hyprctl reload falló; la recarga de colores en Hyprland puede quedar pendiente" >&2
+    fi
+  fi
+
+  # Continuar con el resto del script...
+  pkill -USR2 waybar 2>/dev/null || true
+
+  # Recargar swaync
+  if systemctl --user is-active --quiet swaync.service; then
+    systemctl --user restart swaync.service
+  else
+    systemctl --user start swaync.service
+  fi
+
+  # Recargar nvim (solo sockets reales)
+  mapfile -t NVIM_SOCKETS < <(find "/run/user/$UID" /tmp -type s -name "nvim*" 2>/dev/null | sort -u)
+  for socket in "${NVIM_SOCKETS[@]}"; do
+    HAS_PYWAL_RELOAD="$(nvim --server "$socket" --remote-expr "exists(':PywalReload')" 2>/dev/null || echo 0)"
+
+    if [[ "$HAS_PYWAL_RELOAD" == "2" ]]; then
+      nvim --server "$socket" --remote-send '<Cmd>silent! PywalReload<CR>' >/dev/null 2>&1 || true
+    else
+      nvim --server "$socket" --remote-expr "execute('silent! colorscheme pywal')" >/dev/null 2>&1 || true
+      nvim --server "$socket" --remote-send '<Cmd>silent! doautocmd ColorScheme<CR>' >/dev/null 2>&1 || true
+      nvim --server "$socket" --remote-send '<Cmd>silent! redraw!<CR>' >/dev/null 2>&1 || true
+    fi
+  done
+else
+  echo "Error: Archivos de pywal no generados" >&2
+  exit 1
+fi
