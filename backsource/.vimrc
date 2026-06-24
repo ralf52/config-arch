@@ -1,0 +1,9 @@
+set number
+set relativenumber
+set laststatus=2
+set tabstop=4
+set scrolloff=8
+set wildmenu
+syntax on
+set noswapfile
+set clipboard=unnamedplus
