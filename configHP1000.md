@@ -1,3 +1,11 @@
+
+
+## Permitir que Xsession se ejecute como root
+`sudo vim /etc/pam.d/other`
+``` bash
+session         optional        pam_xauth.so
+```
+[links](https://wiki.archlinux.org/title/Privilege_elevation_for_graphical_applications#Alternate_methods)
 # CONFIGURACIÓN ARCH LINUX + HYPRLAND (HP1000)
 
 Notas personales de configuración completa para Arch Linux con Hyprland en HP Probook 1000. Incluye instalación de paquetes, configuración de temas, servicios, Hyprland y solución de problemas.
