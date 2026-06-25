@@ -1,0 +1,12 @@
+[Unit]
+Description=Cambiar wallpaper y actualizar colores con pywal
+After=awww.service
+Requires=awww.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/hypr/scripts/wal-swapper.sh
+Environment="XDG_RUNTIME_DIR=%t"
+Environment="AWWW_TRANSITION=any"
+# Pywal necesita estas variables para funcionar
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
